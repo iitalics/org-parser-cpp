@@ -43,11 +43,20 @@ namespace org {
 
         /// if the line is preceded by TODO/DONE, parse that
         /// and returns the corresponding todo prefix.
-        std::optional<Todo> header_todo();
+        std::optional<Todo> header_todo() {
+            if (prefix_by("TODO ")) {
+                mut_chomp_triml(&line_, 4);
+                return std::optional<Todo>(TODO);
+            } else if (prefix_by("DONE ")) {
+                mut_chomp_triml(&line_, 4);
+                return std::optional<Todo>(DONE);
+            } else {
+                return std::optional<Todo>();
+            }
+        }
 
         /// parses trailing tags and returns them all.
         std::vector<std::string> trailing_tags();
-
 
         // -------------------------------------------------
         // parsing body

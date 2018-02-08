@@ -34,9 +34,16 @@ namespace org__private {
         mut_chompr(str, i);
     }
 
+    /////////////////////////////////////////////////////
+
     inline std::string trimlr(std::string str) {
         mut_trimr(&str);
         mut_triml(&str);
         return str;
+    }
+
+    inline void mut_chomp_triml(std::string* str, size_t n) {
+        mut_chompl(str, n);
+        mut_triml(str);
     }
 }
