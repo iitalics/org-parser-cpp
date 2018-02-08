@@ -10,18 +10,18 @@ namespace org {
     ///
     /// \brief Class for representing dates by year/month/day.
     ///
-    class date {
+    class Date {
         uint32_t year_;
         uint8_t month_, day_;
 
     public:
-        date(uint32_t y, uint8_t m, uint8_t d)
+        Date(uint32_t y, uint8_t m, uint8_t d)
             : year_(y)
             , month_(m)
             , day_(d)
         {}
 
-        date()
+        Date()
             : year_(0)
             , month_(0)
             , day_(0)
@@ -37,83 +37,79 @@ namespace org {
                 && day_ == 0;
         }
 
-        std::optional<date> to_optional() const {
+        std::optional<Date> to_optional() const {
             return is_empty()
-                ? std::optional<date>()
-                : std::optional<date>(*this);
+                ? std::optional<Date>()
+                : std::optional<Date>(*this);
         }
     };
 
-    using priority_type = int;
+    ///
+    /// A priority is one of 'A', 'B', or 'C'
+    ///
+    using Priority = char;
 
     ///
-    /// \brief Class for representing nodes in an Org Mode document
+    /// A Todo is either TODO or DONE
     ///
-    class node {
-    public:
-        using tag_set = std::unordered_set<std::string>;
-        using property_map = std::unordered_map<std::string, std::string>;
+    using Todo = bool;
+    constexpr bool TODO = true;
+    constexpr bool DONE = false;
 
-    private:
-        size_t        level_;
-        std::string   headline_, body_, tag_, todo_;
-        priority_type prty_;
-        date          scheduled_, deadline_;
-        tag_set       tags_;
-        property_map  props_;
+    ///
+    /// Class for headers in a node
+    ///
+    class Header {
+        std::string text_;
+        std::optional<Priority> prio_;
+        std::optional<Todo> todo_;
 
     public:
-        node(size_t lvl,
-             std::string hl,
-             std::string body,
-             std::string tag,
-             tag_set all_tags = tag_set())
-            : level_(lvl)
-            , headline_(std::move(hl))
-            , body_(std::move(body))
-            , tag_(std::move(tag))
-            , tags_(std::move(all_tags))
+        Header(std::string t)
+            : text_(t)
         {}
 
-        ////////////////////// getters
+        std::optional<Priority> priority() const { return prio_; }
+        std::optional<Todo> todo() const { return todo_; }
+        void clear_priority() { prio_.reset(); }
+        void clear_todo() { todo_.reset(); }
 
+        Priority* mut_priority() {
+            if (!prio_.has_value()) {
+                prio_.emplace('A');
+            }
+            return &*prio_;
+        }
+
+        Todo* mut_todo() {
+            if (!todo_.has_value()) {
+                todo_.emplace(true);
+            }
+            return &*todo_;
+        }
+    };
+
+    ///
+    /// Class for nodes in an Org Mode document
+    ///
+    class Node {
+    public:
+        using TagSet = std::unordered_set<std::string>;
+        using PropertyMap = std::unordered_map<std::string, std::string>;
+
+    private:
+        size_t      level_;
+        Header      header_;
+        Date        scheduled_, deadline_;
+        TagSet      tags_;
+        PropertyMap props_;
+
+    public:
         size_t level() const { return level_; }
-        std::string const& headline() const { return headline_; }
-        std::string const& tag() const { return tag_; }
-        std::string const& todo() const { return todo_; }
-        priority_type priority() const { return prty_; }
-        std::optional<date> scheduled() const { return scheduled_.to_optional(); }
-        std::optional<date> deadline() const { return deadline_.to_optional(); }
-
-        bool is_tagged(const std::string& tag) const {
-            return tags_.find(tag) != tags_.cend();
-        }
-
-        std::optional<std::string> property(const std::string& key) const {
-            auto it = props_.find(key);
-            return it == props_.cend()
-                ? std::optional<std::string>()
-                : std::optional<std::string>(it->second);
-        }
-
-        ////////////////////// mutators
-
-        priority_type* mut_priority() {
-            return &prty_;
-        }
-
-        void set_tag(const std::string& tag) {
-            tags_.insert(tag);
-        }
-
-        void clear_tag(const std::string& tag) {
-            auto it = tags_.find(tag);
-            if (it != tags_.end())
-                tags_.erase(it);
-        }
-
-        std::string* mut_property(const std::string& key) {
-            return &props_[key];
-        }
+        Header const& header() const { return header_; }
+        Date scheduled() const { return scheduled_; }
+        Date deadline() const { return deadline_; }
+        TagSet const& tags() const { return tags_; }
+        TagSet* mut_tags() { return &tags_; }
     };
 }

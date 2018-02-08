@@ -6,11 +6,11 @@
 
 void test_date()
 {
-    auto bday = org::date(1997, 10, 10);
-    assert(org::date().is_empty());
-    assert(org::date(0, 0, 0).is_empty());
+    auto bday = org::Date(1997, 10, 10);
+    assert(org::Date().is_empty());
+    assert(org::Date(0, 0, 0).is_empty());
     assert(!bday.is_empty());
-    assert_eq(org::date().to_optional().has_value(), false);
+    assert_eq(org::Date().to_optional().has_value(), false);
     assert_eq(bday.to_optional().has_value(), true);
     assert_eq(bday.to_optional().value().year(), bday.year());
     assert_eq(bday.to_optional().value().month(), bday.month());
