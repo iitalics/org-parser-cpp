@@ -1,7 +1,11 @@
 
-all:
+all: build
+
+build:
 	cmake build
 	make -Cbuild
 
-test: all
+test: build
 	./build/runtests
+
+.PHONY: all build test
