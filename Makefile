@@ -1,11 +1,7 @@
+CXX=clang++ -std=c++1z
+CXXFLAGS=-Wall -g -O1
 
-all: build
-
-build:
-	cmake build
-	make -Cbuild
-
-test: build
-	./build/runtests
-
-.PHONY: all build test
+.PHONY: test
+test:
+	$(CXX) $(CXXFLAGS) $(wildcard test/*.cpp) -o run-tests
+	./run-tests
