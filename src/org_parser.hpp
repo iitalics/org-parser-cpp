@@ -47,7 +47,7 @@ namespace org {
     ///
     /// \brief Enumeration for different priorities
     ///
-    enum class priority {
+    enum class priority_type {
         None = 0, A, B, C,
     };
 
@@ -62,7 +62,7 @@ namespace org {
     private:
         size_t       level_;
         std::string  headline_, body_, tag_, todo_;
-        priority     prty_;
+        priority_type prty_;
         date         scheduled_, deadline_;
         tag_set      tags_;
         property_map props_;
@@ -77,16 +77,49 @@ namespace org {
             , headline_(std::move(hl))
             , body_(std::move(body))
             , tag_(std::move(tag))
-            , prty_(priority::None)
+            , prty_(priority_type::None)
             , tags_(std::move(all_tags))
         {}
+
+        ////////////////////// getters
 
         inline size_t level() const { return level_; }
         inline std::string const& headline() const { return headline_; }
         inline std::string const& tag() const { return tag_; }
         inline std::string const& todo() const { return todo_; }
+        inline priority_type priority() const { return prty_; }
         inline std::optional<date> scheduled() const { return scheduled_.to_optional(); }
         inline std::optional<date> deadline() const { return deadline_.to_optional(); }
-    };
 
+        inline bool is_tagged(const std::string& tag) const {
+            return tags_.find(tag) != tags_.cend();
+        }
+
+        inline std::optional<std::string> property(const std::string& key) const {
+            auto it = props_.find(key);
+            return it == props_.cend()
+                ? std::optional<std::string>()
+                : std::optional<std::string>(it->second);
+        }
+
+        ////////////////////// mutators
+
+        inline priority_type* mut_priority() {
+            return &prty_;
+        }
+
+        inline void set_tag(const std::string& tag) {
+            tags_.insert(tag);
+        }
+
+        inline void clear_tag(const std::string& tag) {
+            auto it = tags_.find(tag);
+            if (it != tags_.end())
+                tags_.erase(it);
+        }
+
+        inline std::string* mut_property(const std::string& key) {
+            return &props_[key];
+        }
+    };
 }
