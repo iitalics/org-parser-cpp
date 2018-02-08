@@ -5,14 +5,25 @@
 
 namespace org__private {
 
+    // removes the leftmost n chars from the given string
+    inline void mut_chompl(std::string* str, size_t n)
+    {
+        std::memmove(str->data(), str->data() + n, str->size() - n);
+        str->resize(str->size() - n);
+    }
+
+    // removes the rightmost n chars from the given string
+    inline void mut_chompr(std::string* str, size_t n)
+    {
+        str->resize(str->size() - n);
+    }
+
     // trim leading whitespace
     inline void mut_triml(std::string* str) {
         size_t i = 0;
         while (str->size() > i && std::isspace((*str)[i]))
             i++;
-
-        std::memmove(str->data(), str->data() + i, str->size() - i);
-        str->resize(str->size() - i);
+        mut_chompl(str, i);
     }
 
     // trim trailing whitespace
@@ -20,8 +31,7 @@ namespace org__private {
         size_t i = 0;
         while (str->size() > i && std::isspace((*str)[str->size() - i -1]))
             i++;
-
-        str->resize(str->size() - i);
+        mut_chompr(str, i);
     }
 
     inline std::string trimlr(std::string str) {
