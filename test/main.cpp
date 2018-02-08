@@ -1,5 +1,5 @@
-#include <iostream>
-#include "../src/org_parser.hpp"
+#include <cstdio>
+#include "../src/org.hpp"
 
 int main(void)
 {
