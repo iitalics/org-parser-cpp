@@ -1,0 +1,5 @@
+cmake_minimum_required (VERSION 3.1)
+project(OrgParser)
+file(GLOB TEST_SRCS "../test/*.cpp")
+set (CMAKE_CXX_FLAGS -std=c++1z)
+add_executable(runtests ${TEST_SRCS} )
