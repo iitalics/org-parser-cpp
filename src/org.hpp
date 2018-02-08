@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -21,11 +22,7 @@ namespace org {
             , day_(d)
         {}
 
-        Date()
-            : year_(0)
-            , month_(0)
-            , day_(0)
-        {}
+        Date() : Date(0, 0, 0) {}
 
         uint32_t year() const { return year_; }
         uint32_t month() const { return month_; }
@@ -111,5 +108,38 @@ namespace org {
         Date deadline() const { return deadline_; }
         TagSet const& tags() const { return tags_; }
         TagSet* mut_tags() { return &tags_; }
+    };
+
+
+    ///
+    /// Class for a file full of nodes
+    ///
+    class File {
+        std::vector<Node> nodes_;
+    public:
+        File();
+        std::vector<Node> const& nodes() const { return nodes_; }
+        std::vector<Node>* mut_nodes() { return &nodes_; }
+    };
+
+
+    ///
+    /// Error to be raised during parsing
+    ///
+    class ParseError : public std::runtime_error {
+
+        static std::string build_message_(const char* msg)
+        {
+            std::string full_msg = "Error parsing: ";
+            full_msg += msg;
+            return full_msg;
+        }
+
+        explicit ParseError(const char* msg)
+            : std::runtime_error(build_message_(msg))
+        {}
+
+    public:
+        // TODO: static constructor methods
     };
 }
