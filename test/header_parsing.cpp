@@ -1,7 +1,8 @@
 #include "../src/org_parser.hpp"
 #include <cassert>
+#include <cstdio>
 
-void test_header_parsing() {
+static void test_header_stars() {
     {
         org::LineParser parse("***  Header at level 3");
         if (auto stars = parse.header_level()) {
@@ -36,4 +37,44 @@ void test_header_parsing() {
         }
         assert(parse.line() == "  * not a header");
     }
+}
+
+static void test_trailing_tags() {
+    {
+        org::LineParser parse("header    :t1:tag2:");
+        auto tags = parse.trailing_tags();
+        assert(tags.size() == 2);
+        assert(tags[0] == "t1");
+        assert(tags[1] == "tag2");
+        assert(parse.line() == "header");
+    }
+
+    {
+        org::LineParser parse(" the header    :");
+        auto tags = parse.trailing_tags();
+        assert(tags.size() == 0);
+        assert(parse.line() == " the header");
+    }
+
+    {
+        org::LineParser parse("no tags ::: here");
+        auto tags = parse.trailing_tags();
+        assert(tags.size() == 0);
+        assert(parse.line() == "no tags ::: here");
+    }
+
+    {
+        org::LineParser parse("tags :cant have :spaces:");
+        auto tags = parse.trailing_tags();
+        assert(tags.size() == 1);
+        assert(tags[0] == "spaces");
+        assert(parse.line() == "tags :cant have");
+    }
+}
+
+void test_header_parsing() {
+    printf("  LineParser::header_stars, header_todo\n");
+    test_header_stars();
+    printf("  LineParser::tailing_tags\n");
+    test_trailing_tags();
 }

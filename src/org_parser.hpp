@@ -1,5 +1,6 @@
 #pragma once
 #include "org_utils.hpp"
+#include <algorithm>
 
 namespace org {
     using namespace org__private;
@@ -56,7 +57,38 @@ namespace org {
         }
 
         /// parses trailing tags and returns them all.
-        std::vector<std::string> trailing_tags();
+        std::vector<std::string> trailing_tags() {
+            if (line_.size() < 2 || line_.back() != ':') {
+                return {};
+            }
+
+            std::vector<std::string> tags;
+
+            // rightmost ':'
+            size_t right = line_.size() - 1;
+            for (;;) {
+                // next ':' to the left of rightmost
+                size_t left = line_.rfind(':', right - 1);
+                if (left == std::string::npos) break;
+
+                // pull out tag substring
+                auto tag = line_.substr(left + 1, right - left - 1);
+
+                // dont use if it contains whitespace
+                if (std::find_if(tag.cbegin(), tag.cend(),
+                                 [] (char c) { return std::isspace(c); })
+                    != tag.cend())
+                    break;
+
+                right = left;
+                tags.push_back(tag);
+            }
+
+            line_.resize(right);
+            mut_trimr(&line_);
+            std::reverse(tags.begin(), tags.end());
+            return tags;
+        }
 
         // -------------------------------------------------
         // parsing body
