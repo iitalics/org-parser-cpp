@@ -8,7 +8,7 @@ namespace org {
     class LineParser {
         std::string line_;
 
-        bool prefix_by(const char* s) const {
+        bool is_prefix_by(const char* s) const {
             for (size_t i = 0; s[i]; i++) {
                 if (line_.size() <= i || line_[i] != s[i])
                     return false;
@@ -29,30 +29,30 @@ namespace org {
         /// if line is preceded by asterisks, parses them
         /// and then returns the number of asterisks.
         std::optional<size_t> header_level() {
-            if (prefix_by("*")) {
+            if (is_prefix_by("*")) {
                 size_t stars = 0;
                 while (stars < line_.size() && line_[stars] == '*')
                     stars++;
 
                 mut_chompl(&line_, stars);
                 mut_triml(&line_);
-                return std::optional<int>(stars);
+                return stars;
             } else {
-                return std::optional<int>();
+                return {};
             }
         }
 
         /// if the line is preceded by TODO/DONE, parse that
         /// and returns the corresponding todo prefix.
         std::optional<Todo> header_todo() {
-            if (prefix_by("TODO ")) {
+            if (is_prefix_by("TODO ")) {
                 mut_chomp_triml(&line_, 4);
-                return std::optional<Todo>(TODO);
-            } else if (prefix_by("DONE ")) {
+                return TODO;
+            } else if (is_prefix_by("DONE ")) {
                 mut_chomp_triml(&line_, 4);
-                return std::optional<Todo>(DONE);
+                return DONE;
             } else {
-                return std::optional<Todo>();
+                return {};
             }
         }
 

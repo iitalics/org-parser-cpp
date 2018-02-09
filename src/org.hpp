@@ -35,9 +35,10 @@ namespace org {
         }
 
         std::optional<Date> to_optional() const {
-            return is_empty()
-                ? std::optional<Date>()
-                : std::optional<Date>(*this);
+            if (is_empty())
+                return {};
+            else
+                return *this;
         }
     };
 
@@ -72,16 +73,14 @@ namespace org {
         void clear_todo() { todo_.reset(); }
 
         Priority* mut_priority() {
-            if (!prio_.has_value()) {
+            if (!prio_.has_value())
                 prio_.emplace('A');
-            }
             return &*prio_;
         }
 
         Todo* mut_todo() {
-            if (!todo_.has_value()) {
+            if (!todo_.has_value())
                 todo_.emplace(true);
-            }
             return &*todo_;
         }
     };
