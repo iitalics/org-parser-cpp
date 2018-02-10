@@ -100,6 +100,18 @@ namespace org {
 
         // if the line is a property, parses and returns the
         // key for the property.
-        std::optional<std::string> leading_property();
+        std::optional<std::string> leading_property() {
+            if (line_.size() < 2 || line_.front() != ':')
+                return {};
+
+            size_t end = line_.find(": ", 1);
+            if (end == std::string::npos)
+                return {};
+
+            auto key = line_.substr(1, end - 1);
+            mut_chompl(&line_, end + 2);
+            mut_triml(&line_);
+            return key;
+        }
     };
 }
