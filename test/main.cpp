@@ -7,9 +7,6 @@ void test_body_parsing();
 void test_file_parsing();
 
 int main(void) {
-  printf("testing org::Date\n");
-  test_date();
-
   printf("testing org__private\n");
   test_utils();
 

@@ -9,38 +9,13 @@
 namespace org {
 
 ///
-/// \brief Class for representing dates by year/month/day.
-///
-class Date {
-  uint32_t year_;
-  uint8_t month_, day_;
-
-public:
-  Date(uint32_t y, uint8_t m, uint8_t d) : year_(y), month_(m), day_(d) {}
-
-  Date() : Date(0, 0, 0) {}
-
-  uint32_t year() const { return year_; }
-  uint32_t month() const { return month_; }
-  uint32_t day() const { return day_; }
-
-  bool is_empty() const { return year_ == 0 && month_ == 0 && day_ == 0; }
-
-  std::optional<Date> to_optional() const {
-    if (is_empty())
-      return {};
-    else
-      return *this;
-  }
-};
-
-///
 /// A priority is one of 'A', 'B', or 'C'
 ///
 using Priority = char;
 
 ///
 /// A Todo is either TODO or DONE
+/// TOOD: make std::string
 ///
 using Todo = bool;
 constexpr bool TODO = true;
