@@ -14,9 +14,15 @@ void serialize(BackInsertLine out, File const &file) {
     // ------------------------
     // HEADER:
 
-    // insert *'s, name and trailing spaces
+    // insert *'s and prefix
     tmp += std::string(node.level(), '*');
     tmp += ' ';
+    if (!node.header().prefix().empty()) {
+      tmp += node.header().prefix();
+      tmp += ' ';
+    }
+
+    // insert text and trailing space
     tmp += node.header().text();
     tmp += std::string(node.header().trailing_space(), ' ');
 
