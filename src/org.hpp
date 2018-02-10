@@ -144,8 +144,12 @@ class ParseError : public std::runtime_error {
       : std::runtime_error(build_message_(loc, msg)) {}
 
 public:
-  static inline ParseError body_before_node(ParseLoc loc) {
-    return ParseError(loc, "text found before first header");
-  }
+#define DEFINE_ERROR(fn, str)                                                  \
+  static inline ParseError fn(ParseLoc loc) { return ParseError(loc, str); }
+
+  DEFINE_ERROR(body_before_node, "text found before first header");
+  DEFINE_ERROR(repeat_prop, "multiple occurrences of the same property");
+
+#undef DEFINE_ERROR
 };
 } // namespace org

@@ -111,9 +111,7 @@ public:
 
       // create the node; move tags into it
       auto node = Node(*stars, Header(std::move(line_), trailing, prefix));
-      for (auto &tag : tags)
-        node.mut_tags()->push_back(std::move(tag));
-
+      std::swap(*node.mut_tags(), tags);
       return node;
     } else {
       return {};
@@ -174,6 +172,9 @@ File parse_file(LineIterator lines_begin, LineIterator lines_end) {
 
       // parse a property?
       if (auto prop = parse.property()) {
+        if (current_node->property(prop->key()).has_value())
+          throw ParseError::repeat_prop(loc);
+
         current_node->add_property(std::move(*prop));
       } else {
         current_node->mut_body()->emplace_back(std::move(parse.line()));

@@ -44,7 +44,24 @@ void test_file_parsing() {
       org::parse_file(lines.begin(), lines.end());
       assert(0);
     } catch (org::ParseError &e) {
-      // OK
+      assert(std::string(e.what()) == "parse error: line 1: "
+                                      "text found before first header");
+    }
+  }
+
+  {
+    std::vector<std::string> lines = {
+        "* Header",
+        "  :p: 1",
+        "  :p: 2",
+    };
+    try {
+      org::parse_file(lines.begin(), lines.end());
+      assert(0);
+    } catch (org::ParseError &e) {
+      assert(std::string(e.what()) ==
+             "parse error: line 3: "
+             "multiple occurrences of the same property");
     }
   }
 }
