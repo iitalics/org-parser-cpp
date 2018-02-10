@@ -79,7 +79,6 @@ void test_header_parsing() {
     if (auto node = parse.node_header()) {
       assert(node->header().text() == "Some: header");
       assert(node->header().trailing_space() == 4);
-      assert(node->header().priority() == std::nullopt);
       assert(node->header().prefix() == "PREFIX");
 
       assert(node->tags().size() == 2);

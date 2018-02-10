@@ -10,28 +10,20 @@
 namespace org {
 
 ///
-/// A priority is one of 'A', 'B', or 'C'
-///
-using Priority = char;
-
-///
 /// Class for headers in a node
 ///
 class Header {
   std::string text_;
   size_t trailing_space_;
   std::string prefix_;
-  std::optional<Priority> prio_;
 
 public:
   explicit Header(std::string text, size_t trailing_space = 0,
-                  std::string prefix = "", std::optional<Priority> prio = {})
-      : text_(text), trailing_space_(trailing_space), prefix_(prefix),
-        prio_(prio) {}
+                  std::string prefix = "")
+      : text_(text), trailing_space_(trailing_space), prefix_(prefix) {}
 
   std::string const &text() const { return text_; }
   size_t trailing_space() const { return trailing_space_; }
-  std::optional<Priority> priority() const { return prio_; }
   std::string const &prefix() const { return prefix_; }
 };
 
