@@ -14,12 +14,12 @@ static void test_header_stars() {
   }
 
   {
-    org::LineParser parse("* TODO  Header at level 1");
+    org::LineParser parse("* TODOMSG   Header at level 1");
     if (auto stars = parse.header_level()) {
       assert(*stars == 1);
 
       if (auto todo = parse.header_todo()) {
-        assert(*todo == org::TODO);
+        assert(*todo == "TODOMSG");
       } else {
         assert(0);
       }
@@ -85,7 +85,7 @@ void test_header_parsing() {
       assert(node->header().text() == "Some: header");
       assert(node->header().trailing_space() == 4);
       assert(node->header().priority() == std::nullopt);
-      assert(node->header().todo() == org::TODO);
+      assert(node->header().todo() == "TODO");
 
       assert(node->tags().size() == 2);
       assert(node->tags().find("x") != node->tags().end());

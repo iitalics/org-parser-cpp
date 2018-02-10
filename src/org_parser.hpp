@@ -46,20 +46,25 @@ public:
     }
   }
 
-  /// if the line is preceded by TODO/DONE, parse that
-  /// and returns the corresponding todo prefix.
-  /// REDO THIS PLEASE
+  /// if the line is preceded by ALL CAPS, parse that
+  /// and returns the corresponding todo prefix. trims
+  /// leading whitespace no matter what.
   std::optional<Todo> header_todo() {
     mut_triml(&line_);
-    if (is_prefix_by("TODO ")) {
-      mut_chomp_triml(&line_, 4);
-      return TODO;
-    } else if (is_prefix_by("DONE ")) {
-      mut_chomp_triml(&line_, 4);
-      return DONE;
-    } else {
+
+    size_t space = line_.find(' ');
+    if (space == std::string::npos)
       return {};
-    }
+
+    // check that its ALL CAPS
+    if (!std::all_of(line_.cbegin(), line_.cbegin() + space,
+                     [](char c) { return 'A' <= c && c <= 'Z'; }))
+      return {};
+
+    // extract and remove substring
+    auto todo = line_.substr(0, space);
+    mut_chomp_triml(&line_, space);
+    return todo;
   }
 
   /// parses trailing tags and returns them all.
@@ -81,8 +86,8 @@ public:
       auto tag = line_.substr(left + 1, right - left - 1);
 
       // dont use if it contains whitespace
-      if (std::find_if(tag.cbegin(), tag.cend(),
-                       [](char c) { return std::isspace(c); }) != tag.cend())
+      if (std::any_of(tag.cbegin(), tag.cend(),
+                      [](char c) { return std::isspace(c); }))
         break;
 
       right = left;

@@ -10,7 +10,7 @@ void test_file_parsing() {
         "     just some",
         "",
         "     text      ",
-        "** Second",
+        "** DONE Second",
         "   :big:   true",
         "   :bad:   yes",
         "   :ugly:  perhaps",
@@ -30,6 +30,7 @@ void test_file_parsing() {
 
     assert(snd.header().text() == "Second");
     assert(snd.header().trailing_space() == 0);
+    assert(snd.header().todo() == "DONE");
     assert(snd.property("big") == "true");
     assert(snd.property("bad") == "yes");
     assert(snd.property("ugly") == "perhaps");

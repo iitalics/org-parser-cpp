@@ -18,9 +18,7 @@ using Priority = char;
 /// A Todo is either TODO or DONE
 /// TOOD: make std::string
 ///
-using Todo = bool;
-constexpr bool TODO = true;
-constexpr bool DONE = false;
+using Todo = std::string;
 
 ///
 /// Class for headers in a node
