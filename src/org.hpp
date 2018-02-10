@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -44,12 +45,26 @@ public:
 };
 
 ///
-/// Class for nodes in an Org Mode document
+/// Properties in an Org Mode document
+///
+class Property {
+  std::string key_, val_;
+
+public:
+  Property(std::string k, std::string v) : key_(k), val_(v) {}
+
+  std::string const &key() const { return key_; }
+  std::string const &value() const { return val_; }
+  std::string *mut_value() { return &val_; }
+};
+
+///
+/// Nodes in an Org Mode document
 ///
 class Node {
 public:
   using TagSet = std::unordered_set<std::string>;
-  using PropertyMap = std::unordered_map<std::string, std::string>;
+  using PropertyMap = std::vector<Property>;
   using Body = std::vector<std::string>;
 
 private:
@@ -68,16 +83,27 @@ public:
   TagSet const &tags() const { return tags_; }
   TagSet *mut_tags() { return &tags_; }
   PropertyMap const &properties() const { return props_; }
-  PropertyMap *mut_properties() { return &props_; }
   Body const &body() const { return body_; }
   Body *mut_body() { return &body_; }
 
-  std::optional<std::string> property(std::string const &key) const {
-    auto it = props_.find(key);
-    if (it != props_.end())
-      return it->second;
+  void set_property(std::string const &key, std::string value) {
+    auto it = std::find_if(props_.begin(), props_.end(),
+                           [&](Property &p) { return p.key() == key; });
+
+    if (it == props_.end())
+      props_.emplace_back(key, std::move(value));
     else
+      std::swap(*it->mut_value(), value);
+  }
+
+  std::optional<std::string> property(std::string const &key) const {
+    auto it = std::find_if(props_.begin(), props_.end(),
+                           [&](Property const &p) { return p.key() == key; });
+
+    if (it == props_.end())
       return {};
+    else
+      return it->value();
   }
 };
 

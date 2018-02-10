@@ -38,13 +38,13 @@ void serialize(BackInsertLine out, File const &file) {
     auto indent = std::string(1 + node.level(), ' ');
 
     // push properties
-    for (auto &pair : node.properties()) {
+    for (auto &prop : node.properties()) {
       tmp.clear();
       tmp += indent;
       tmp += ':';
-      tmp += pair.first;
+      tmp += prop.key();
       tmp += ": ";
-      tmp += pair.second;
+      tmp += prop.value();
       *out++ = tmp;
     }
 

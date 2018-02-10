@@ -166,8 +166,7 @@ File parse_file(LineIterator lines_begin, LineIterator lines_end) {
 
       // parse a property?
       if (auto prop_key = parse.leading_property()) {
-        current_node->mut_properties()->insert_or_assign(
-            std::move(*prop_key), std::move(parse.line()));
+        current_node->set_property(*prop_key, std::move(parse.line()));
       } else {
         current_node->mut_body()->emplace_back(std::move(parse.line()));
       }

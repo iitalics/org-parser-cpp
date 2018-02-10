@@ -30,9 +30,9 @@ void test_file_parsing() {
 
     assert(snd.header().text() == "Second");
     assert(snd.header().trailing_space() == 0);
-    assert(snd.properties().at("big") == "true");
-    assert(snd.properties().at("bad") == "yes");
-    assert(snd.properties().at("ugly") == "perhaps");
+    assert(snd.property("big") == "true");
+    assert(snd.property("bad") == "yes");
+    assert(snd.property("ugly") == "perhaps");
   }
 
   {
