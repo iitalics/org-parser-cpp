@@ -43,7 +43,8 @@ void serialize(BackInsertLine out, File const &file) {
       tmp += indent;
       tmp += ':';
       tmp += prop.key();
-      tmp += ": ";
+      tmp += ':';
+      tmp += std::string(prop.leading_space(), ' ');
       tmp += prop.value();
       *out++ = tmp;
     }
