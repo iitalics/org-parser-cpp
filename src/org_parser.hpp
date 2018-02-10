@@ -162,8 +162,6 @@ File parse_file(LineIterator lines_begin, LineIterator lines_end) {
         throw ParseError::body_before_node(loc);
 
       parse.trim();
-      if (parse.line().empty())
-        continue;
 
       // parse a property?
       if (auto prop_key = parse.leading_property()) {
