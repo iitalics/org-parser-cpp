@@ -1,4 +1,4 @@
-#include "../src/org_serialize.hpp"
+#include "../org.hpp"
 #include <cassert>
 #include <cstdio>
 

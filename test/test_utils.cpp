@@ -1,4 +1,4 @@
-#include "../src/org_utils.hpp"
+#include "../org.hpp"
 #include <cassert>
 
 void test_utils() {
