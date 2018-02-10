@@ -8,6 +8,9 @@ void test_file_parsing() {
         std::vector<std::string> lines =
         {
             "* First header     :1st:",
+            "     just some",
+            "",
+            "     text      ",
             "** Second",
             "   :big:   true",
             "   :bad:   yes",
@@ -20,7 +23,9 @@ void test_file_parsing() {
 
         assert(fst.header().text() == "First header");
         assert(fst.tags().find("1st") != fst.tags().end());
-        assert(fst.body().size() == 0);
+        assert(fst.body().size() == 2);
+        assert(fst.body().at(0) == "just some");
+        assert(fst.body().at(1) == "text");
 
         assert(snd.header().text() == "Second");
         assert(snd.properties().at("big") == "true");
