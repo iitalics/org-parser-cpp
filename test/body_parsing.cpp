@@ -5,7 +5,7 @@
 void test_body_parsing() {
   {
     org::LineParser parse("hello world");
-    if (parse.leading_property()) {
+    if (parse.property()) {
       assert(0);
     } else {
       assert(parse.line() == "hello world");
@@ -14,19 +14,21 @@ void test_body_parsing() {
 
   {
     org::LineParser parse(":theprop: the val");
-    if (auto key = parse.leading_property()) {
-      assert(*key == "theprop");
-      assert(parse.line() == "the val");
+    if (auto prop = parse.property()) {
+      assert(prop->key() == "theprop");
+      assert(prop->value() == "the val");
+      assert(prop->leading_space() == 1);
     } else {
       assert(0);
     }
   }
 
   {
-    org::LineParser parse(":the:prop: the:val");
-    if (auto key = parse.leading_property()) {
-      assert(*key == "the:prop");
-      assert(parse.line() == "the:val");
+    org::LineParser parse(":the:prop:     the:val");
+    if (auto prop = parse.property()) {
+      assert(prop->key() == "the:prop");
+      assert(prop->value() == "the:val");
+      assert(prop->leading_space() == 5);
     } else {
       assert(0);
     }
@@ -34,9 +36,9 @@ void test_body_parsing() {
 
   {
     org::LineParser parse(":the :prop: the:val");
-    if (auto key = parse.leading_property()) {
-      assert(*key == "the :prop");
-      assert(parse.line() == "the:val");
+    if (auto prop = parse.property()) {
+      assert(prop->key() == "the :prop");
+      assert(prop->value() == "the:val");
     } else {
       assert(0);
     }
@@ -44,7 +46,7 @@ void test_body_parsing() {
 
   {
     org::LineParser parse(":not:a:property");
-    if (parse.leading_property()) {
+    if (parse.property()) {
       assert(0);
     } else {
       assert(parse.line() == ":not:a:property");
@@ -53,7 +55,7 @@ void test_body_parsing() {
 
   {
     org::LineParser parse(": not a property");
-    if (parse.leading_property()) {
+    if (parse.property()) {
       assert(0);
     } else {
       assert(parse.line() == ": not a property");

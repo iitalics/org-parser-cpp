@@ -49,12 +49,15 @@ public:
 ///
 class Property {
   std::string key_, val_;
+  size_t leading_space_;
 
 public:
-  Property(std::string k, std::string v) : key_(k), val_(v) {}
+  Property(std::string k, std::string v, size_t spaces = 0)
+      : key_(k), val_(v), leading_space_(spaces) {}
 
   std::string const &key() const { return key_; }
   std::string const &value() const { return val_; }
+  size_t leading_space() const { return leading_space_; }
   std::string *mut_value() { return &val_; }
 };
 
@@ -86,14 +89,20 @@ public:
   Body const &body() const { return body_; }
   Body *mut_body() { return &body_; }
 
-  void set_property(std::string const &key, std::string value) {
+  void set_property(std::string const &key, std::string value,
+                    size_t spaces = 0) {
     auto it = std::find_if(props_.begin(), props_.end(),
                            [&](Property &p) { return p.key() == key; });
 
     if (it == props_.end())
-      props_.emplace_back(key, std::move(value));
+      props_.emplace_back(key, std::move(value), spaces);
     else
       std::swap(*it->mut_value(), value);
+  }
+
+  void add_property(Property prop) {
+    set_property(prop.key(), std::move(*prop.mut_value()),
+                 prop.leading_space());
   }
 
   std::optional<std::string> property(std::string const &key) const {

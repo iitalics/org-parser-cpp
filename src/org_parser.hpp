@@ -95,7 +95,7 @@ public:
   }
 
   // if this line is a header, parse it. returns a new node
-  // with just the header
+  // with just the header.
   std::optional<Node> node_header() {
     if (auto stars = header_level()) {
       // parse stuff
@@ -105,7 +105,7 @@ public:
       size_t trailing = mut_trimr(&line_);
 
       // create the node; move tags into it
-      auto node = Node(*stars, Header(std::move(line()), trailing, prio, todo));
+      auto node = Node(*stars, Header(std::move(line_), trailing, prio, todo));
       for (auto &tag : tags)
         node.mut_tags()->emplace(std::move(tag));
 
@@ -119,8 +119,8 @@ public:
   // parsing body
 
   // if the line is a property, parses and returns the
-  // key for the property.
-  std::optional<std::string> leading_property() {
+  // key and value as a Property.
+  std::optional<Property> property() {
     if (line_.size() < 2 || line_.front() != ':')
       return {};
 
@@ -128,10 +128,13 @@ public:
     if (end == std::string::npos)
       return {};
 
+    // 1 because we need to skip the initial :
     auto key = line_.substr(1, end - 1);
-    mut_chompl(&line_, end + 2);
-    mut_triml(&line_);
-    return key;
+    // + 1 because we need to skip the final :
+    mut_chompl(&line_, end + 1);
+    size_t spaces = mut_triml(&line_);
+
+    return Property(key, std::move(line_), spaces);
   }
 };
 
@@ -165,8 +168,8 @@ File parse_file(LineIterator lines_begin, LineIterator lines_end) {
       parse.trim();
 
       // parse a property?
-      if (auto prop_key = parse.leading_property()) {
-        current_node->set_property(*prop_key, std::move(parse.line()));
+      if (auto prop = parse.property()) {
+        current_node->add_property(std::move(*prop));
       } else {
         current_node->mut_body()->emplace_back(std::move(parse.line()));
       }
