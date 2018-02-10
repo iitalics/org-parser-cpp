@@ -15,31 +15,24 @@ namespace org {
 using Priority = char;
 
 ///
-/// A Todo is either TODO or DONE
-/// TOOD: make std::string
-///
-using Todo = std::string;
-
-///
 /// Class for headers in a node
 ///
 class Header {
   std::string text_;
   size_t trailing_space_;
+  std::string prefix_;
   std::optional<Priority> prio_;
-  std::optional<Todo> todo_;
 
 public:
   explicit Header(std::string text, size_t trailing_space = 0,
-                  std::optional<Priority> prio = {},
-                  std::optional<Todo> todo = {})
-      : text_(text), trailing_space_(trailing_space), prio_(prio), todo_(todo) {
-  }
+                  std::string prefix = "", std::optional<Priority> prio = {})
+      : text_(text), trailing_space_(trailing_space), prefix_(prefix),
+        prio_(prio) {}
 
   std::string const &text() const { return text_; }
   size_t trailing_space() const { return trailing_space_; }
   std::optional<Priority> priority() const { return prio_; }
-  std::optional<Todo> todo() const { return todo_; }
+  std::string const &prefix() const { return prefix_; }
 };
 
 ///

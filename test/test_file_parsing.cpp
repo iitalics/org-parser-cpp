@@ -22,6 +22,7 @@ void test_file_parsing() {
 
     assert(fst.header().text() == "First header");
     assert(fst.header().trailing_space() == 14);
+    assert(fst.header().prefix().empty());
     assert(fst.tags().find("1st") != fst.tags().end());
     assert(fst.body().size() == 3);
     assert(fst.body().at(0) == "just some");
@@ -30,7 +31,7 @@ void test_file_parsing() {
 
     assert(snd.header().text() == "Second");
     assert(snd.header().trailing_space() == 0);
-    assert(snd.header().todo() == "DONE");
+    assert(snd.header().prefix() == "DONE");
     assert(snd.property("big") == "true");
     assert(snd.property("bad") == "yes");
     assert(snd.property("ugly") == "perhaps");

@@ -47,24 +47,25 @@ public:
   }
 
   /// if the line is preceded by ALL CAPS, parse that
-  /// and returns the corresponding todo prefix. trims
-  /// leading whitespace no matter what.
-  std::optional<Todo> header_todo() {
+  /// and returns the corresponding prefix. trims
+  /// leading whitespace no matter what. if no prefix present,
+  /// returns empty string.
+  std::string header_prefix() {
     mut_triml(&line_);
 
     size_t space = line_.find(' ');
     if (space == std::string::npos)
-      return {};
+      return "";
 
     // check that its ALL CAPS
     if (!std::all_of(line_.cbegin(), line_.cbegin() + space,
                      [](char c) { return 'A' <= c && c <= 'Z'; }))
-      return {};
+      return "";
 
     // extract and remove substring
-    auto todo = line_.substr(0, space);
+    auto prefix = line_.substr(0, space);
     mut_chomp_triml(&line_, space);
-    return todo;
+    return prefix;
   }
 
   /// parses trailing tags and returns them all.
@@ -104,13 +105,12 @@ public:
   std::optional<Node> node_header() {
     if (auto stars = header_level()) {
       // parse stuff
-      std::optional<Priority> prio = {};
-      std::optional<Todo> todo = header_todo();
-      std::vector<std::string> tags = trailing_tags();
+      auto prefix = header_prefix();
+      auto tags = trailing_tags();
       size_t trailing = mut_trimr(&line_);
 
       // create the node; move tags into it
-      auto node = Node(*stars, Header(std::move(line_), trailing, prio, todo));
+      auto node = Node(*stars, Header(std::move(line_), trailing, prefix));
       for (auto &tag : tags)
         node.mut_tags()->emplace(std::move(tag));
 
