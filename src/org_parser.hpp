@@ -24,6 +24,12 @@ namespace org {
 
         std::string const& line() const { return line_; }
 
+        // trim leading and trailing whitespace
+        void trim() {
+            mut_trimr(&line_);
+            mut_triml(&line_);
+        }
+
         // -------------------------------------------------
         // parsing header
 
@@ -90,20 +96,21 @@ namespace org {
             return tags;
         }
 
-        // if this line is a header, parse it. returns the header
-        // and the tags
-        std::optional<std::pair<Header, Node::TagSet>> header() {
+        // if this line is a header, parse it. returns a new node
+        // with just the header
+        std::optional<Node> node_header() {
             if (auto stars = header_level()) {
+                // parse stuff
                 std::optional<Priority> prio = {};
                 std::optional<Todo> todo = header_todo();
                 std::vector<std::string> tags = trailing_tags();
 
-                Node::TagSet tag_set;
+                // create the node; move tags into it
+                auto node = Node(*stars, Header(std::move(line()), prio, todo));
                 for (auto& tag : tags)
-                    tag_set.insert(std::move(tag));
+                    node.mut_tags()->emplace(std::move(tag));
 
-                auto head = Header(line(), prio, todo);
-                return std::make_pair(std::move(head), std::move(tag_set));
+                return node;
             } else {
                 return {};
             }
@@ -112,11 +119,6 @@ namespace org {
 
         // -------------------------------------------------
         // parsing body
-
-        // if the line is prefixed with DEADLINE/SCHEDULED,
-        // parses the prefix and returns the date. the prefix
-        // is put into 'out_prefix'.
-        std::optional<Date> date(std::string& out_prefix);
 
         // if the line is a property, parses and returns the
         // key for the property.
@@ -134,4 +136,55 @@ namespace org {
             return key;
         }
     };
+
+
+    // parse an entire file
+    template <typename LineIterator>
+    File parse_file(LineIterator lines_begin,
+                    LineIterator lines_end) {
+
+        ParseLoc loc;
+        File file;
+        std::optional<Node> current_node;
+
+        for (LineIterator it = lines_begin;
+             it != lines_end;
+             ++it, (*loc.mut_line())++) {
+
+            auto parse = LineParser(*it);
+
+            // parse a header?
+            if (auto new_node = parse.node_header()) {
+
+                // push previous node
+                if (current_node.has_value())
+                    file.mut_nodes()->emplace_back(std::move(*current_node));
+
+                // set up new node
+                current_node.emplace(std::move(*new_node));
+
+            } else {
+                if (!current_node.has_value())
+                    throw ParseError::body_before_node(loc);
+
+                parse.trim();
+
+                // parse a property?
+                if (auto prop_key = parse.leading_property()) {
+                    current_node->mut_properties()
+                        ->insert_or_assign(std::move(*prop_key),
+                                           std::move(parse.line()));
+                } else {
+                    current_node->mut_body()
+                        ->emplace_back(std::move(parse.line()));
+                }
+            }
+        }
+
+        // push the final node
+        if (current_node.has_value())
+            file.mut_nodes()->emplace_back(std::move(*current_node));
+
+        return file;
+    }
 }

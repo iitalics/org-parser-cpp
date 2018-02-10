@@ -81,17 +81,14 @@ void test_header_parsing() {
     printf("  LineParser::header\n");
     {
         org::LineParser parse("**** TODO Some: header    :x:yz:");
-        if (auto header_tags = parse.header()) {
-            auto head = std::move(header_tags->first);
-            auto tags = std::move(header_tags->second);
+        if (auto node = parse.node_header()) {
+            assert(node->header().text() == "Some: header");
+            assert(node->header().priority() == std::nullopt);
+            assert(node->header().todo() == org::TODO);
 
-            assert(head.text() == "Some: header");
-            assert(head.priority() == std::nullopt);
-            assert(head.todo() == org::TODO);
-
-            assert(tags.size() == 2);
-            assert(tags.find("x") != tags.end());
-            assert(tags.find("yz") != tags.end());
+            assert(node->tags().size() == 2);
+            assert(node->tags().find("x") != node->tags().end());
+            assert(node->tags().find("yz") != node->tags().end());
 
         } else {
             assert(0);

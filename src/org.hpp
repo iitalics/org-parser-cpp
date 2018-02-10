@@ -54,6 +54,7 @@ namespace org {
     constexpr bool TODO = true;
     constexpr bool DONE = false;
 
+
     ///
     /// Class for headers in a node
     ///
@@ -76,6 +77,7 @@ namespace org {
         std::optional<Todo> todo() const { return todo_; }
     };
 
+
     ///
     /// Class for nodes in an Org Mode document
     ///
@@ -83,21 +85,37 @@ namespace org {
     public:
         using TagSet = std::unordered_set<std::string>;
         using PropertyMap = std::unordered_map<std::string, std::string>;
+        using Body = std::vector<std::string>;
 
     private:
         size_t      level_;
         Header      header_;
-        Date        scheduled_, deadline_;
         TagSet      tags_;
         PropertyMap props_;
+        std::vector<std::string> body_;
 
     public:
+        Node(size_t level, Header header)
+            : level_(level)
+            , header_(std::move(header))
+        {}
+
         size_t level() const { return level_; }
         Header const& header() const { return header_; }
-        Date scheduled() const { return scheduled_; }
-        Date deadline() const { return deadline_; }
         TagSet const& tags() const { return tags_; }
         TagSet* mut_tags() { return &tags_; }
+        PropertyMap const& properties() const { return props_; }
+        PropertyMap* mut_properties() { return &props_; }
+        Body const& body() const { return body_; }
+        Body* mut_body() { return &body_; }
+
+        std::optional<std::string> property(std::string const& key) const {
+            auto it = props_.find(key);
+            if (it != props_.end())
+                return it->second;
+            else
+                return {};
+        }
     };
 
 
@@ -107,29 +125,50 @@ namespace org {
     class File {
         std::vector<Node> nodes_;
     public:
-        File();
+        File() {}
+
         std::vector<Node> const& nodes() const { return nodes_; }
         std::vector<Node>* mut_nodes() { return &nodes_; }
     };
 
+
+
+    ///
+    /// A location in a file, for reporting in parse errors
+    ///
+    class ParseLoc {
+        size_t line_;
+    public:
+        explicit ParseLoc(size_t line = 1)
+            : line_(line)
+        {}
+
+        size_t line() const { return line_; }
+        size_t* mut_line() { return &line_; }
+    };
 
     ///
     /// Error to be raised during parsing
     ///
     class ParseError : public std::runtime_error {
 
-        static std::string build_message_(const char* msg)
-        {
-            std::string full_msg = "Error parsing: ";
+        static std::string build_message_(ParseLoc loc, const char* msg) {
+            std::string full_msg = "parse error: line ";
+            full_msg += std::to_string(loc.line());
+            full_msg += ": ";
             full_msg += msg;
             return full_msg;
         }
 
-        explicit ParseError(const char* msg)
-            : std::runtime_error(build_message_(msg))
+        explicit ParseError(ParseLoc loc, const char* msg)
+            : std::runtime_error(build_message_(loc, msg))
         {}
 
     public:
-        // TODO: static constructor methods
+
+        static inline ParseError body_before_node(ParseLoc loc) {
+            return ParseError(loc, "text found before first header");
+        }
+
     };
 }
