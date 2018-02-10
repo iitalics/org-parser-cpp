@@ -63,26 +63,17 @@ namespace org {
         std::optional<Todo> todo_;
 
     public:
-        Header(std::string t)
-            : text_(t)
+        explicit Header(std::string text,
+                        std::optional<Priority> prio = {},
+                        std::optional<Todo> todo = {})
+            : text_(text)
+            , prio_(prio)
+            , todo_(todo)
         {}
 
+        std::string const& text() const { return text_; }
         std::optional<Priority> priority() const { return prio_; }
         std::optional<Todo> todo() const { return todo_; }
-        void clear_priority() { prio_.reset(); }
-        void clear_todo() { todo_.reset(); }
-
-        Priority* mut_priority() {
-            if (!prio_.has_value())
-                prio_.emplace('A');
-            return &*prio_;
-        }
-
-        Todo* mut_todo() {
-            if (!todo_.has_value())
-                todo_.emplace(true);
-            return &*todo_;
-        }
     };
 
     ///

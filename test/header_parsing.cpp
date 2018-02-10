@@ -77,4 +77,24 @@ void test_header_parsing() {
     test_header_stars();
     printf("  LineParser::tailing_tags\n");
     test_trailing_tags();
+
+    printf("  LineParser::header\n");
+    {
+        org::LineParser parse("**** TODO Some: header    :x:yz:");
+        if (auto header_tags = parse.header()) {
+            auto head = std::move(header_tags->first);
+            auto tags = std::move(header_tags->second);
+
+            assert(head.text() == "Some: header");
+            assert(head.priority() == std::nullopt);
+            assert(head.todo() == org::TODO);
+
+            assert(tags.size() == 2);
+            assert(tags.find("x") != tags.end());
+            assert(tags.find("yz") != tags.end());
+
+        } else {
+            assert(0);
+        }
+    }
 }

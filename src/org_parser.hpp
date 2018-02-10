@@ -1,6 +1,7 @@
 #pragma once
 #include "org_utils.hpp"
 #include <algorithm>
+#include <utility>
 
 namespace org {
     using namespace org__private;
@@ -58,9 +59,8 @@ namespace org {
 
         /// parses trailing tags and returns them all.
         std::vector<std::string> trailing_tags() {
-            if (line_.size() < 2 || line_.back() != ':') {
+            if (line_.size() < 2 || line_.back() != ':')
                 return {};
-            }
 
             std::vector<std::string> tags;
 
@@ -89,6 +89,26 @@ namespace org {
             std::reverse(tags.begin(), tags.end());
             return tags;
         }
+
+        // if this line is a header, parse it. returns the header
+        // and the tags
+        std::optional<std::pair<Header, Node::TagSet>> header() {
+            if (auto stars = header_level()) {
+                std::optional<Priority> prio = {};
+                std::optional<Todo> todo = header_todo();
+                std::vector<std::string> tags = trailing_tags();
+
+                Node::TagSet tag_set;
+                for (auto& tag : tags)
+                    tag_set.insert(std::move(tag));
+
+                auto head = Header(line(), prio, todo);
+                return std::make_pair(std::move(head), std::move(tag_set));
+            } else {
+                return {};
+            }
+        }
+
 
         // -------------------------------------------------
         // parsing body
