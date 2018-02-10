@@ -6,7 +6,7 @@ void test_file_parsing() {
 
   {
     std::vector<std::string> lines = {
-        "* First header     :1st:",
+        "* First header              :1st:",
         "     just some",
         "",
         "     text      ",
@@ -21,6 +21,7 @@ void test_file_parsing() {
     auto &snd = file.nodes()[1];
 
     assert(fst.header().text() == "First header");
+    assert(fst.header().trailing_space() == 14);
     assert(fst.tags().find("1st") != fst.tags().end());
     assert(fst.body().size() == 3);
     assert(fst.body().at(0) == "just some");
@@ -28,6 +29,7 @@ void test_file_parsing() {
     assert(fst.body().at(2) == "text");
 
     assert(snd.header().text() == "Second");
+    assert(snd.header().trailing_space() == 0);
     assert(snd.properties().at("big") == "true");
     assert(snd.properties().at("bad") == "yes");
     assert(snd.properties().at("ugly") == "perhaps");

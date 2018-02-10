@@ -7,7 +7,7 @@ static void test_header_stars() {
     org::LineParser parse("***  Header at level 3");
     if (auto stars = parse.header_level()) {
       assert(*stars == 3);
-      assert(parse.line() == "Header at level 3");
+      assert(parse.line() == "  Header at level 3");
     } else {
       assert(0);
     }
@@ -46,14 +46,14 @@ static void test_trailing_tags() {
     assert(tags.size() == 2);
     assert(tags[0] == "t1");
     assert(tags[1] == "tag2");
-    assert(parse.line() == "header");
+    assert(parse.line() == "header    ");
   }
 
   {
     org::LineParser parse(" the header    :");
     auto tags = parse.trailing_tags();
     assert(tags.size() == 0);
-    assert(parse.line() == " the header");
+    assert(parse.line() == " the header    ");
   }
 
   {
@@ -68,7 +68,7 @@ static void test_trailing_tags() {
     auto tags = parse.trailing_tags();
     assert(tags.size() == 1);
     assert(tags[0] == "spaces");
-    assert(parse.line() == "tags :cant have");
+    assert(parse.line() == "tags :cant have ");
   }
 }
 
@@ -83,6 +83,7 @@ void test_header_parsing() {
     org::LineParser parse("**** TODO Some: header    :x:yz:");
     if (auto node = parse.node_header()) {
       assert(node->header().text() == "Some: header");
+      assert(node->header().trailing_space() == 4);
       assert(node->header().priority() == std::nullopt);
       assert(node->header().todo() == org::TODO);
 

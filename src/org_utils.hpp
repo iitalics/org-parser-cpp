@@ -16,20 +16,24 @@ inline void mut_chompr(std::string *str, size_t n) {
   str->resize(str->size() - n);
 }
 
-// trim leading whitespace
-inline void mut_triml(std::string *str) {
+// trim leading whitespace. returns the number of whitespace
+// characters removed.
+inline size_t mut_triml(std::string *str) {
   size_t i = 0;
   while (str->size() > i && std::isspace((*str)[i]))
     i++;
   mut_chompl(str, i);
+  return i;
 }
 
-// trim trailing whitespace
-inline void mut_trimr(std::string *str) {
+// trim trailing whitespace. returns the number of whitespace
+// characters removed.
+inline size_t mut_trimr(std::string *str) {
   size_t i = 0;
   while (str->size() > i && std::isspace((*str)[str->size() - i - 1]))
     i++;
   mut_chompr(str, i);
+  return i;
 }
 
 /////////////////////////////////////////////////////

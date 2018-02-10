@@ -40,7 +40,6 @@ public:
         stars++;
 
       mut_chompl(&line_, stars);
-      mut_triml(&line_);
       return stars;
     } else {
       return {};
@@ -49,7 +48,9 @@ public:
 
   /// if the line is preceded by TODO/DONE, parse that
   /// and returns the corresponding todo prefix.
+  /// REDO THIS PLEASE
   std::optional<Todo> header_todo() {
+    mut_triml(&line_);
     if (is_prefix_by("TODO ")) {
       mut_chomp_triml(&line_, 4);
       return TODO;
@@ -89,7 +90,6 @@ public:
     }
 
     line_.resize(right);
-    mut_trimr(&line_);
     std::reverse(tags.begin(), tags.end());
     return tags;
   }
@@ -102,9 +102,10 @@ public:
       std::optional<Priority> prio = {};
       std::optional<Todo> todo = header_todo();
       std::vector<std::string> tags = trailing_tags();
+      size_t trailing = mut_trimr(&line_);
 
       // create the node; move tags into it
-      auto node = Node(*stars, Header(std::move(line()), prio, todo));
+      auto node = Node(*stars, Header(std::move(line()), trailing, prio, todo));
       for (auto &tag : tags)
         node.mut_tags()->emplace(std::move(tag));
 

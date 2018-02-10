@@ -26,15 +26,19 @@ constexpr bool DONE = false;
 ///
 class Header {
   std::string text_;
+  size_t trailing_space_;
   std::optional<Priority> prio_;
   std::optional<Todo> todo_;
 
 public:
-  explicit Header(std::string text, std::optional<Priority> prio = {},
+  explicit Header(std::string text, size_t trailing_space = 0,
+                  std::optional<Priority> prio = {},
                   std::optional<Todo> todo = {})
-      : text_(text), prio_(prio), todo_(todo) {}
+      : text_(text), trailing_space_(trailing_space), prio_(prio), todo_(todo) {
+  }
 
   std::string const &text() const { return text_; }
+  size_t trailing_space() const { return trailing_space_; }
   std::optional<Priority> priority() const { return prio_; }
   std::optional<Todo> todo() const { return todo_; }
 };
