@@ -49,7 +49,7 @@ public:
 ///
 class Node {
 public:
-  using TagSet = std::unordered_set<std::string>;
+  using TagSet = std::vector<std::string>;
   using PropertyMap = std::vector<Property>;
   using Body = std::vector<std::string>;
 
@@ -96,6 +96,11 @@ public:
       return {};
     else
       return it->value();
+  }
+
+  bool has_tag(std::string const &t) const {
+    return std::any_of(tags_.cbegin(), tags_.cend(),
+                       [&](std::string const &g) { return t == g; });
   }
 };
 

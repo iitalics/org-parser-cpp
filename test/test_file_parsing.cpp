@@ -23,7 +23,8 @@ void test_file_parsing() {
     assert(fst.header().text() == "First header");
     assert(fst.header().trailing_space() == 14);
     assert(fst.header().prefix().empty());
-    assert(fst.tags().find("1st") != fst.tags().end());
+    assert(fst.tags().size() == 1);
+    assert(fst.has_tag("1st"));
     assert(fst.body().size() == 3);
     assert(fst.body().at(0) == "just some");
     assert(fst.body().at(1) == "");

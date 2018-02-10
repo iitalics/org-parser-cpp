@@ -82,8 +82,8 @@ void test_header_parsing() {
       assert(node->header().prefix() == "PREFIX");
 
       assert(node->tags().size() == 2);
-      assert(node->tags().find("x") != node->tags().end());
-      assert(node->tags().find("yz") != node->tags().end());
+      assert(node->has_tag("x"));
+      assert(node->has_tag("yz"));
 
     } else {
       assert(0);

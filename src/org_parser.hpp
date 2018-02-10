@@ -112,7 +112,7 @@ public:
       // create the node; move tags into it
       auto node = Node(*stars, Header(std::move(line_), trailing, prefix));
       for (auto &tag : tags)
-        node.mut_tags()->emplace(std::move(tag));
+        node.mut_tags()->push_back(std::move(tag));
 
       return node;
     } else {
