@@ -13,8 +13,8 @@ void test_serialize() {
 
   auto snd = org::Node(3, org::Header("Second header", 0, "TODO"));
   snd.mut_body()->push_back("world");
-  snd.set_property("yes", "yas", 2);
-  snd.set_property("no", "nah", 3);
+  snd.add_property(org::Property("yes", "yas", 2));
+  snd.add_property(org::Property("no", "nah", 3));
 
   file.mut_nodes()->emplace_back(std::move(fst));
   file.mut_nodes()->emplace_back(std::move(snd));
