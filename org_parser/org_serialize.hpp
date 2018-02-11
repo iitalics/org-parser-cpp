@@ -72,7 +72,14 @@ void serialize(CallbackFun fun, File const &file) {
 }
 
 inline void serialize_to(std::ostream& os, File const &file) {
-  serialize([&] (std::string const& line) { os << line << std::endl; }, file);
+  bool first_line = true;
+  serialize([&] (std::string const& line) {
+      if (first_line)
+        first_line = false;
+      else
+        os << std::endl;
+      os << line;
+    }, file);
 }
 
 } // namespace org
