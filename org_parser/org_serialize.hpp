@@ -1,5 +1,6 @@
 #pragma once
 #include "org.hpp"
+#include <ostream>
 
 namespace org {
 
@@ -68,6 +69,10 @@ template <typename CallbackFun>
 void serialize(CallbackFun fun, File const &file) {
   for (auto &node : file.nodes())
     serialize_node(fun, node);
+}
+
+inline void serialize_to(std::ostream& os, File const &file) {
+  serialize([&] (std::string const& line) { os << line << std::endl; }, file);
 }
 
 } // namespace org
