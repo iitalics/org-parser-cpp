@@ -3,8 +3,8 @@
 
 namespace org {
 
-template <typename BackInsertLine>
-BackInsertLine serialize_node(BackInsertLine out, Node const &node) {
+template <typename CallbackFun>
+void serialize_node(CallbackFun fun, Node const &node) {
   std::string tmp;
 
   // ------------------------
@@ -32,7 +32,7 @@ BackInsertLine serialize_node(BackInsertLine out, Node const &node) {
   }
 
   // push header line
-  *out++ = tmp;
+  fun(tmp);
 
   // ------------------------
   // BODY:
@@ -48,27 +48,26 @@ BackInsertLine serialize_node(BackInsertLine out, Node const &node) {
     tmp += ':';
     tmp += std::string(prop.leading_space(), ' ');
     tmp += prop.value();
-    *out++ = tmp;
+    fun(tmp);
   }
 
   // push body
   for (auto &line : node.body()) {
     if (line.empty()) {
-      *out++ = "";
+      fun("");
     } else {
       tmp.clear();
       tmp += indent;
       tmp += line;
-      *out++ = tmp;
+      fun(tmp);
     }
   }
-  return out;
 }
 
-template <typename BackInsertLine>
-BackInsertLine serialize(BackInsertLine out, File const &file) {
+template <typename CallbackFun>
+void serialize(CallbackFun fun, File const &file) {
   for (auto &node : file.nodes())
-    out = serialize_node(out, node);
-  return out;
+    serialize_node(fun, node);
 }
+
 } // namespace org
